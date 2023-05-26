@@ -1,5 +1,8 @@
+import imageUrlBuilder from '@sanity/image-url'
 import BASE_PATH from "@/shared/basePath"
 import PortableText from "react-portable-text"
+import { createClient } from 'next-sanity'
+import { useEffect } from 'react'
 
 async function fetchData() {
   let res = await fetch(`${BASE_PATH}/api/sanity`)
@@ -11,10 +14,21 @@ async function fetchData() {
 
 
 const Home = async () => {
-
   let { pets } = await fetchData();
 
-  console.log(pets);
+  let client = createClient({
+    projectId: `${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}`,
+    dataset: `${process.env.NEXT_PUBLIC_SANITY_DATASET}`,
+    apiVersion: "2022-03-25",
+    useCdn: false
+  });
+  const builder = imageUrlBuilder(client);
+  
+  function urlFor(source: string) {
+    return builder.image(source)
+  }
+
+    console.log("Image url : " , urlFor(pets[0].image[0]).width(200).url())
 
   return (
     <div>
