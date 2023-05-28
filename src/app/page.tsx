@@ -1,20 +1,33 @@
+import Image from "next/image"
 import imageUrlBuilder from '@sanity/image-url'
 import BASE_PATH from "@/shared/basePath"
 import PortableText from "react-portable-text"
 import { createClient } from 'next-sanity'
 import { useEffect } from 'react'
 
+// async function fetchData() {
+//   let res = await fetch(`${BASE_PATH}/api/sanity`)
+//   if (!res.ok) {
+//     throw new Error("Fialed to fetch")
+//   }
+//   return res.json()
+// }
+
+let client = createClient({
+  projectId: `${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}`,
+  dataset: `${process.env.NEXT_PUBLIC_SANITY_DATASET}`,
+  apiVersion: "2022-03-25",
+  useCdn: false
+});
+
+
 async function fetchData() {
-  let res = await fetch(`${BASE_PATH}/api/sanity`)
-  if (!res.ok) {
-    throw new Error("Fialed to fetch")
-  }
-  return res.json()
+  const pets = await client.fetch(`*[_type == "pet"]`)
+  return pets
 }
 
-
 const Home = async () => {
-  let { pets } = await fetchData();
+  let pets = await fetchData();
 
   let client = createClient({
     projectId: `${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}`,
@@ -23,12 +36,12 @@ const Home = async () => {
     useCdn: false
   });
   const builder = imageUrlBuilder(client);
-  
+
   function urlFor(source: string) {
     return builder.image(source)
   }
 
-    console.log("Image url : " , urlFor(pets[0].image[0]).width(200).url())
+  console.log("Image url : ", urlFor(pets[0].image[0]).width(200).url())
 
   return (
     <div>
@@ -45,6 +58,11 @@ const Home = async () => {
             <h3>
               <PortableText content={item.description} />
             </h3>
+            <Image width={500} height={500} alt="Hi" src={urlFor(pets[0].image[0]).width(200).url()} />
+            <br />
+            <br />
+            <br />
+            <br />
           </div>
         ))
       }
