@@ -65,3 +65,5 @@ Then use it :
 ```typescript
  <PortableText content={youContentRef} />
 ```
+
+For complete information [visit](https://github.com/panaverse/learn-nextjs/tree/main/step09_headless_cms/sanity)
